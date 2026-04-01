@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     const data = await notionRes.json();
 
     if (!notionRes.ok) {
-      return res.status(500).json({ error: "Error consultando Notion" });
+      return res.status(500).json({ error: "Error en Notion" });
     }
 
     if (data.results.length === 0) {
@@ -45,38 +45,22 @@ export default async function handler(req, res) {
 
     const props = data.results[0].properties;
 
-    // Obtener nombre
+    // 👤 Profesional (TITLE)
     let nombre = null;
-    const posibles = ["Nombre", "Nombre completo", "Médico", "Name"];
-
-    for (const key of posibles) {
-      const p = props[key];
-      if (!p) continue;
-
-      if (p.type === "title") {
-        nombre = p.title.map(t => t.plain_text).join("");
-        break;
-      }
-
-      if (p.type === "rich_text") {
-        nombre = p.rich_text.map(t => t.plain_text).join("");
-        break;
-      }
+    if (props["Profesional"]?.type === "title") {
+      nombre = props["Profesional"].title.map(t => t.plain_text).join("");
     }
 
-    // Detectar tipo de matrícula
-    const mpVal = props["Mat. MP"]?.number ?? null;
-    const mnVal = props["Mat. MN"]?.number ?? null;
-
-    const tipo =
-      mpVal === numero ? "Provincial (MP)" :
-      mnVal === numero ? "Nacional (MN)" :
-      "";
+    // 👨‍⚕️ AIC text (FORMULA)
+    let visitador = null;
+    if (props["AIC text"]?.type === "formula") {
+      visitador = props["AIC text"].formula.string || null;
+    }
 
     return res.json({
       encontrado: true,
       nombre,
-      tipo
+      visitador
     });
 
   } catch (error) {
