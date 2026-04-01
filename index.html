@@ -6,125 +6,77 @@
 <title>Verificador de Médicos</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+* { box-sizing: border-box; }
 
-  body {
+body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #ffffff;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* 🔥 en vez de center */
-  padding-top: 60px; /* aire arriba */
+  align-items: flex-start;
+  padding-top: 60px;
   min-height: 100vh;
-  }
+}
 
-  .card {
-    background: white;
-    padding: 35px;
-    border-radius: 18px;
-    width: 420px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-    text-align: center;
-  }
+.card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  width: 420px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  text-align: center;
+}
 
- .logo {
+.logo {
   width: 100%;
-  max-height: 80px;
+  max-height: 120px;
   object-fit: contain;
   margin-bottom: 20px;
-  }
+}
 
-  h2 {
-    margin-bottom: 25px;
-    font-weight: 600;
-    color: #1e293b;
-  }
+.input-group {
+  display: flex;
+  gap: 10px;
+}
 
-  .input-group {
-    display: flex;
-    gap: 10px;
-  }
+input {
+  flex: 1;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+}
 
-  input {
-    flex: 1;
-    height: 48px;
-    padding: 0 14px;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    font-size: 15px;
-    outline: none;
-    transition: 0.2s;
-  }
+input:focus {
+  border-color: #1d4b8f;
+  box-shadow: 0 0 0 3px rgba(29,75,143,0.1);
+}
 
-  input:focus {
-    border-color: #1d4b8f;
-    box-shadow: 0 0 0 3px rgba(29,75,143,0.1);
-  }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
 
-  /* ❌ sacar flechitas */
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
-  input[type=number] {
-    -moz-appearance: textfield;
-  }
+button {
+  height: 48px;
+  padding: 0 20px;
+  background: #1d4b8f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
-  button {
-    height: 48px;
-    padding: 0 20px;
-    background: #1d4b8f;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
-  }
+button:disabled {
+  background: #94a3b8;
+}
 
-  button:hover {
-    background: #163d78;
-  }
-
-  #resultado {
-    margin-top: 25px;
-    text-align: left;
-    padding: 18px;
-    border-radius: 12px;
-    display: none;
-    font-size: 15px;
-    line-height: 1.5;
-  }
-
-  .ok {
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-
-  .error {
-    background: #fef2f2;
-    color: #7f1d1d;
-    border: 1px solid #fecaca;
-  }
-
-  .title {
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
-  
-  button:disabled {
-    background: #94a3b8;
-    cursor: not-allowed;
-  }
-
- .spinner {
+.spinner {
   margin: 15px auto 5px;
   width: 26px;
   height: 26px;
@@ -135,14 +87,10 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
-.oculto {
-  display: none;
-}
+.oculto { display: none; }
 
 .loading {
   font-size: 13px;
@@ -150,7 +98,33 @@
   margin-bottom: 10px;
 }
 
- .alta-container {
+#resultado {
+  margin-top: 20px;
+  text-align: left;
+  padding: 18px;
+  border-radius: 12px;
+  display: none;
+}
+
+.ok {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.error {
+  background: #fef2f2;
+  color: #7f1d1d;
+  border: 1px solid #fecaca;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* 🔵 BLOQUE CELESTE */
+.alta-container {
   margin-top: 15px;
   padding: 14px;
   border-radius: 12px;
@@ -172,15 +146,7 @@
   color: white;
   border-radius: 8px;
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: 0.2s;
 }
-
-.alta-btn:hover {
-  background: #1d4ed8;
-}
-  
 </style>
 </head>
 
@@ -188,16 +154,19 @@
 
 <div class="card">
   <img src="buscaMatricula.png" class="logo">
- 
- <div class="input-group">
+
+  <div class="input-group">
     <input type="number" id="matricula" placeholder="Ingrese matrícula">
     <button id="btnBuscar" onclick="verificar()">Buscar</button>
   </div>
 
- <div id="spinner" class="spinner oculto"></div>
- <div id="loadingText" class="loading oculto">Consultando base de datos...</div>
+  <div id="spinner" class="spinner oculto"></div>
+  <div id="loadingText" class="loading oculto">Consultando base de datos...</div>
 
   <div id="resultado"></div>
+
+  <!-- 🔥 ESTE ES EL NUEVO BLOQUE INDEPENDIENTE -->
+  <div id="altaContainer" class="oculto"></div>
 </div>
 
 <script>
@@ -207,15 +176,19 @@ async function verificar() {
   const boton = document.getElementById("btnBuscar");
   const spinner = document.getElementById("spinner");
   const loadingText = document.getElementById("loadingText");
+  const altaContainer = document.getElementById("altaContainer");
+
+  // limpiar bloque celeste siempre
+  altaContainer.classList.add("oculto");
+  altaContainer.innerHTML = "";
 
   if (!matricula) {
-  resultado.className = "error";
-  resultado.style.display = "block";
-  resultado.innerHTML = "Ingresá una matrícula válida";
-  return;
-}
+    resultado.className = "error";
+    resultado.style.display = "block";
+    resultado.innerHTML = "Ingresá una matrícula válida";
+    return;
+  }
 
-  // 🔒 estado loading PRO
   boton.disabled = true;
   boton.innerText = "Buscando...";
   spinner.classList.remove("oculto");
@@ -226,23 +199,13 @@ async function verificar() {
   try {
     const res = await fetch("/api/verificar", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        matricula: Number(matricula)
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ matricula: Number(matricula) })
     });
 
     const data = await res.json();
 
     resultado.style.display = "block";
-
-    if (!res.ok) {
-      resultado.className = "error";
-      resultado.innerHTML = "Error: " + data.error;
-      return;
-    }
 
     if (data.encontrado) {
       resultado.className = "ok";
@@ -253,57 +216,52 @@ async function verificar() {
         🏥 Tipo: ${data.tipo}
       `;
     } else {
-    resultado.className = "error";
-    resultado.innerHTML = `
-      <div class="title">Médico inexistente</div>
-      La matrícula ${matricula} no está registrada.
-    `;
-  
-    // 🔵 nuevo bloque independiente
-    resultado.innerHTML += `
-      <div class="alta-container">
-        <div class="alta-text">
-          Si desea dar de alta un médico:
-        </div><br>
-        <a 
-          href="https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" 
-          target="_blank" 
-          class="alta-btn"
-        >
-          ➕ ALTA DE MÉDICO
-        </a>
-      </div>
-    `;
-  }
+      resultado.className = "error";
+      resultado.innerHTML = `
+        <div class="title">Médico inexistente</div>
+        La matrícula ${matricula} no está registrada.
+      `;
+
+      // 🔵 BLOQUE SEPARADO (FUERA DEL ROJO)
+      altaContainer.classList.remove("oculto");
+      altaContainer.innerHTML = `
+        <div class="alta-container">
+          <div class="alta-text">
+            Si desea dar de alta un médico:
+          </div>
+          <a href="https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" target="_blank" class="alta-btn">
+            NUEVO MÉDICO
+          </a>
+        </div>
+      `;
+    }
 
   } catch (e) {
     resultado.className = "error";
     resultado.style.display = "block";
     resultado.innerHTML = "Error de conexión";
   } finally {
-    // 🔓 restaurar UI
     boton.disabled = false;
     boton.innerText = "Buscar";
     spinner.classList.add("oculto");
     loadingText.classList.add("oculto");
   }
 }
-  
-  document.getElementById("matricula").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    verificar();
-  }
-});
- 
-  // 🎯 Auto focus al cargar
-  document.getElementById("matricula").focus();
-  
-  // 🧹 Limpiar resultado cuando escribe
-  document.getElementById("matricula").addEventListener("input", () => {
-    document.getElementById("resultado").style.display = "none";
-  });
 
- </script>
+// Enter
+document.getElementById("matricula").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") verificar();
+});
+
+// Focus
+document.getElementById("matricula").focus();
+
+// Limpiar
+document.getElementById("matricula").addEventListener("input", () => {
+  document.getElementById("resultado").style.display = "none";
+  document.getElementById("altaContainer").classList.add("oculto");
+});
+</script>
 
 </body>
 </html>
