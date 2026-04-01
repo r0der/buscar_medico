@@ -56,7 +56,9 @@ export default async function handler(req, res) {
     if (props["AIC text"]?.type === "formula") {
       visitador = props["AIC text"].formula.string || null;
     }
-
+    
+    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate");
+    
     return res.json({
       encontrado: true,
       nombre,
