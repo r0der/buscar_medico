@@ -115,6 +115,32 @@
     background: #94a3b8;
     cursor: not-allowed;
   }
+
+ .spinner {
+  margin: 15px auto 5px;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #1d4b8f;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.oculto {
+  display: none;
+}
+
+.loading {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
   
 </style>
 </head>
@@ -128,6 +154,9 @@
     <input type="number" id="matricula" placeholder="Ingrese matrícula">
     <button id="btnBuscar" onclick="verificar()">Buscar</button>
   </div>
+
+ <div id="spinner" class="spinner oculto"></div>
+ <div id="loadingText" class="loading oculto">Consultando base de datos...</div>
 
   <div id="resultado"></div>
 </div>
