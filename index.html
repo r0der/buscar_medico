@@ -11,12 +11,13 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #eef2f7, #f8fafc);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #f8fafc);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 🔥 en vez de center */
+  padding-top: 60px; /* aire arriba */
+  min-height: 100vh;
   }
 
   .card {
@@ -141,6 +142,22 @@
   color: #64748b;
   margin-bottom: 10px;
 }
+
+ .alta-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #f97316;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.alta-btn:hover {
+  background: #ea580c;
+}
   
 </style>
 </head>
@@ -214,12 +231,25 @@ async function verificar() {
         🏥 Tipo: ${data.tipo}
       `;
     } else {
-      resultado.className = "error";
-      resultado.innerHTML = `
-        <div class="title">Médico inexistente</div>
-        La matrícula ${matricula} no está registrada.
-      `;
-    }
+  resultado.className = "error";
+  resultado.innerHTML = `
+    <div class="title">Médico inexistente</div>
+    La matrícula ${matricula} no está registrada.
+
+    <div class="alta-box">
+      <div class="alta-text">
+        Si desea dar de alta un médico:
+      </div>
+      <a 
+        href="https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" 
+        target="_blank" 
+        class="alta-btn"
+      >
+        ➕ ALTA DE MÉDICO
+      </a>
+    </div>
+  `;
+}
 
   } catch (e) {
     resultado.className = "error";
