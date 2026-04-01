@@ -21,7 +21,7 @@ body {
   background: white;
   padding: 40px;
   border-radius: 18px;
-  width: 400px;
+  width: 320px;
   text-align: center;
 }
 
@@ -217,12 +217,12 @@ async function verificar() {
       // 🔵 BLOQUE SEPARADO (FUERA DEL ROJO)
       altaContainer.classList.remove("oculto");
       altaContainer.innerHTML = `
-        <div class="alta-container">
-          <a href="https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" target="_blank" class="alta-btn">
-            NUEVO MÉDICO
-          </a>
-        </div>
-      `;
+    <div class="alta-container">
+      <a href="#" onclick="abrirEnNotion('https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106'); return false;" class="alta-btn">
+        NUEVO MÉDICO
+      </a>
+    </div>
+  `;
     }
 
   } catch (e) {
@@ -247,9 +247,25 @@ document.getElementById("matricula").focus();
 
 // Limpiar
 document.getElementById("matricula").addEventListener("input", () => {
-  document.getElementById("resultado").style.display = "none";
-  document.getElementById("altaContainer").classList.add("oculto");
+document.getElementById("resultado").style.display = "none";
+document.getElementById("altaContainer").classList.add("oculto");
 });
+
+function abrirEnNotion(urlWeb) {
+// Convertir URL web a deep link
+// https://www.notion.so/pagina-xxx  →  notion://www.notion.so/pagina-xxx
+const deepLink = urlWeb.replace("https://", "notion://");
+
+// Intentar abrir la app
+window.location = deepLink;
+
+// Si después de 2 segundos no abrió la app (no está instalada),
+// redirigir a la web como fallback
+setTimeout(() => {
+  window.location = urlWeb;
+}, 2000);
+}
+  
 </script>
 
 </body>
