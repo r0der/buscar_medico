@@ -74,17 +74,10 @@ export default async function handler(req, res) {
       nombre = props["Profesional"].title.map(t => t.plain_text).join("");
     }
 
-    // 👨‍⚕️ Visitador (FORMULA)
-    let visitador = null;
-    if (props["AIC text"]?.type === "formula") {
-      visitador = props["AIC text"].formula.string || null;
-    }
-
     // ✅ RESPUESTA FINAL
     return res.json({
       encontrado: true,
       nombre,
-      visitador,
       tipo
     });
 
