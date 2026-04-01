@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
-  const { matricula, tipo } = req.body;
+  const { matricula } = req.body;
 
   if (!matricula || isNaN(matricula)) {
     return res.status(400).json({ error: "Matrícula inválida" });
@@ -12,21 +12,6 @@ export default async function handler(req, res) {
   const numero = Number(matricula);
 
   try {
-    let filter;
-
-    if (tipo === "MP") {
-      filter = { property: "Mat. MP", number: { equals: numero } };
-    } else if (tipo === "MN") {
-      filter = { property: "Mat. MN", number: { equals: numero } };
-    } else {
-      filter = {
-        or: [
-          { property: "Mat. MP", number: { equals: numero } },
-          { property: "Mat. MN", number: { equals: numero } }
-        ]
-      };
-    }
-
     const notionRes = await fetch(
       `https://api.notion.com/v1/databases/${process.env.NOTION_DB_ID}/query`,
       {
@@ -34,19 +19,24 @@ export default async function handler(req, res) {
         headers: {
           Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
           "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
+          "Notion-Version": "2022-06-28"
         },
         body: JSON.stringify({
-          filter,
+          filter: {
+            or: [
+              { property: "Mat. MP", number: { equals: numero } },
+              { property: "Mat. MN", number: { equals: numero } }
+            ]
+          },
           page_size: 1
-        }),
+        })
       }
     );
 
     const data = await notionRes.json();
 
     if (!notionRes.ok) {
-      return res.status(500).json({ error: "Error en Notion" });
+      return res.status(500).json({ error: "Error consultando Notion" });
     }
 
     if (data.results.length === 0) {
@@ -55,9 +45,10 @@ export default async function handler(req, res) {
 
     const props = data.results[0].properties;
 
+    // Obtener nombre
     let nombre = null;
-
     const posibles = ["Nombre", "Nombre completo", "Médico", "Name"];
+
     for (const key of posibles) {
       const p = props[key];
       if (!p) continue;
@@ -73,12 +64,22 @@ export default async function handler(req, res) {
       }
     }
 
+    // Detectar tipo de matrícula
+    const mpVal = props["Mat. MP"]?.number ?? null;
+    const mnVal = props["Mat. MN"]?.number ?? null;
+
+    const tipo =
+      mpVal === numero ? "Provincial (MP)" :
+      mnVal === numero ? "Nacional (MN)" :
+      "";
+
     return res.json({
       encontrado: true,
-      nombre
+      nombre,
+      tipo
     });
 
   } catch (error) {
-    return res.status(500).json({ error: "Error interno" });
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
