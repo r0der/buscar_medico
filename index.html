@@ -1,71 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Verificador de Matrícula</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificador de Médicos</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #e8edf5, #f6f8fb);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 350px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #1d4b8f;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #163d78;
+  }
+
+  #resultado {
+    margin-top: 20px;
+    text-align: left;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .ok {
+    background: #e8f5ee;
+    color: #1a5c38;
+    border: 1px solid #a8d5b8;
+  }
+
+  .error {
+    background: #faeaea;
+    color: #7a1f1f;
+    border: 1px solid #e0a0a0;
+  }
+</style>
 </head>
 
-<body style="font-family: Arial; padding:40px;">
+<body>
 
+<div class="card">
   <h2>Verificar Médico</h2>
 
   <input type="number" id="matricula" placeholder="Ingrese matrícula">
-  <br><br>
 
   <button onclick="verificar()">VERIFICAR</button>
 
-  <p id="resultado"></p>
+  <div id="resultado"></div>
+</div>
 
-  <script>
-    async function verificar() {
-      const matricula = document.getElementById("matricula").value;
-      const resultado = document.getElementById("resultado");
+<script>
+async function verificar() {
+  const matricula = document.getElementById("matricula").value;
+  const resultado = document.getElementById("resultado");
 
-      if (!matricula) {
-        resultado.innerText = "Ingresá una matrícula";
-        resultado.style.color = "orange";
-        return;
-      }
+  if (!matricula) {
+    resultado.className = "error";
+    resultado.style.display = "block";
+    resultado.innerHTML = "Ingresá una matrícula válida";
+    return;
+  }
 
-      resultado.innerText = "Consultando...";
+  resultado.style.display = "block";
+  resultado.className = "";
+  resultado.innerHTML = "Consultando...";
 
-      try {
-        const res = await fetch("/api/verificar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            matricula: Number(matricula)
-          })
-        });
+  try {
+    const res = await fetch("/api/verificar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        matricula: Number(matricula)
+      })
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!res.ok) {
-          resultado.innerText = "Error: " + data.error;
-          resultado.style.color = "orange";
-          return;
-        }
-
-        if (data.encontrado) {
-          resultado.innerText =
-            "Médico existente" +
-            (data.nombre ? " - " + data.nombre : "") +
-            (data.tipo ? " (" + data.tipo + ")" : "");
-
-          resultado.style.color = "green";
-        } else {
-          resultado.innerText = "Médico inexistente";
-          resultado.style.color = "red";
-        }
-
-      } catch (error) {
-        resultado.innerText = "Error de conexión con el servidor";
-        resultado.style.color = "orange";
-      }
+    if (!res.ok) {
+      resultado.className = "error";
+      resultado.innerHTML = "Error: " + data.error;
+      return;
     }
-  </script>
+
+    if (data.encontrado) {
+      resultado.className = "ok";
+      resultado.innerHTML = `
+        <strong>Médico existente</strong><br><br>
+        👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
+        📄 Matrícula: ${matricula}<br>
+        👨‍⚕️ Visitado por: ${data.visitador || "No registrado"}
+      `;
+    } else {
+      resultado.className = "error";
+      resultado.innerHTML = `
+        <strong>Médico inexistente</strong><br>
+        La matrícula ${matricula} no está registrada.
+      `;
+    }
+
+  } catch (e) {
+    resultado.className = "error";
+    resultado.innerHTML = "Error de conexión";
+  }
+}
+</script>
 
 </body>
 </html>
