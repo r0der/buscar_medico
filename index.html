@@ -6,9 +6,13 @@
 <title>Verificador de Médicos</title>
 
 <style>
+  * {
+    box-sizing: border-box;
+  }
+
   body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #e8edf5, #f6f8fb);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,35 +21,63 @@
 
   .card {
     background: white;
-    padding: 30px;
-    border-radius: 16px;
-    width: 350px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 35px;
+    border-radius: 18px;
+    width: 420px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
     text-align: center;
   }
 
   h2 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 10px;
   }
 
   input {
-    width: 100%;
-    padding: 12px;
+    flex: 1;
+    height: 48px;
+    padding: 0 14px;
     border-radius: 10px;
-    border: 1px solid #ccc;
-    margin-bottom: 15px;
-    font-size: 16px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  input:focus {
+    border-color: #1d4b8f;
+    box-shadow: 0 0 0 3px rgba(29,75,143,0.1);
+  }
+
+  /* ❌ sacar flechitas */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 
   button {
-    width: 100%;
-    padding: 12px;
+    height: 48px;
+    padding: 0 20px;
     background: #1d4b8f;
     color: white;
     border: none;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
   }
 
   button:hover {
@@ -53,24 +85,37 @@
   }
 
   #resultado {
-    margin-top: 20px;
+    margin-top: 25px;
     text-align: left;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 18px;
+    border-radius: 12px;
     display: none;
+    font-size: 15px;
+    line-height: 1.5;
   }
 
   .ok {
-    background: #e8f5ee;
-    color: #1a5c38;
-    border: 1px solid #a8d5b8;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
   }
 
   .error {
-    background: #faeaea;
-    color: #7a1f1f;
-    border: 1px solid #e0a0a0;
+    background: #fef2f2;
+    color: #7f1d1d;
+    border: 1px solid #fecaca;
   }
+
+  .title {
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+  }
+  
 </style>
 </head>
 
@@ -79,9 +124,10 @@
 <div class="card">
   <h2>Verificar Médico</h2>
 
-  <input type="number" id="matricula" placeholder="Ingrese matrícula">
-
-  <button onclick="verificar()">VERIFICAR</button>
+  <div class="input-group">
+    <input type="number" id="matricula" placeholder="Ingrese matrícula">
+    <button id="btnBuscar" onclick="verificar()">Buscar</button>
+  </div>
 
   <div id="resultado"></div>
 </div>
@@ -90,6 +136,7 @@
 async function verificar() {
   const matricula = document.getElementById("matricula").value;
   const resultado = document.getElementById("resultado");
+  const boton = document.getElementById("btnBuscar");
 
   if (!matricula) {
     resultado.className = "error";
@@ -98,9 +145,13 @@ async function verificar() {
     return;
   }
 
+  // 🔒 desactivar botón
+  boton.disabled = true;
+  boton.innerText = "Buscando...";
+
   resultado.style.display = "block";
   resultado.className = "";
-  resultado.innerHTML = "Consultando...";
+  resultado.innerHTML = "🔎 Buscando médico...";
 
   try {
     const res = await fetch("/api/verificar", {
@@ -124,15 +175,14 @@ async function verificar() {
     if (data.encontrado) {
       resultado.className = "ok";
       resultado.innerHTML = `
-        <strong>Médico existente</strong><br><br>
+        <div class="title">Médico existente</div>
         👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
-        📄 Matrícula: ${matricula}<br>
-        👨‍⚕️ Visitado por: ${data.visitador || "No registrado"}
+        📄 Matrícula: ${matricula}
       `;
     } else {
       resultado.className = "error";
       resultado.innerHTML = `
-        <strong>Médico inexistente</strong><br>
+        <div class="title">Médico inexistente</div>
         La matrícula ${matricula} no está registrada.
       `;
     }
@@ -140,8 +190,18 @@ async function verificar() {
   } catch (e) {
     resultado.className = "error";
     resultado.innerHTML = "Error de conexión";
+  } finally {
+    // 🔓 reactivar botón SIEMPRE
+    boton.disabled = false;
+    boton.innerText = "Buscar";
+    }
   }
-}
+  
+  document.getElementById("matricula").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    verificar();
+  }
+  });
 </script>
 
 </body>
