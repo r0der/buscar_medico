@@ -12,7 +12,8 @@ export default async function handler(req, res) {
   const numero = Number(matricula);
 
   try {
-    const notionRes = await fetch(
+    // 🔎 1. BUSCAR EN MATRÍCULA PROVINCIAL (MP)
+    let notionRes = await fetch(
       `https://api.notion.com/v1/databases/${process.env.NOTION_DB_ID}/query`,
       {
         method: "POST",
@@ -23,22 +24,44 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           filter: {
-            or: [
-              { property: "Mat. MP", number: { equals: numero } },
-              { property: "Mat. MN", number: { equals: numero } }
-            ]
+            property: "Mat. MP",
+            number: { equals: numero }
           },
           page_size: 1
         })
       }
     );
 
-    const data = await notionRes.json();
+    let data = await notionRes.json();
 
-    if (!notionRes.ok) {
-      return res.status(500).json({ error: "Error en Notion" });
+    let tipo = "Provincial (MP)";
+
+    // 🔁 2. SI NO ENCUENTRA → BUSCAR EN NACIONAL (MN)
+    if (data.results.length === 0) {
+      notionRes = await fetch(
+        `https://api.notion.com/v1/databases/${process.env.NOTION_DB_ID}/query`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+            "Content-Type": "application/json",
+            "Notion-Version": "2022-06-28"
+          },
+          body: JSON.stringify({
+            filter: {
+              property: "Mat. MN",
+              number: { equals: numero }
+            },
+            page_size: 1
+          })
+        }
+      );
+
+      data = await notionRes.json();
+      tipo = "Nacional (MN)";
     }
 
+    // ❌ NO ENCONTRADO
     if (data.results.length === 0) {
       return res.json({ encontrado: false });
     }
@@ -51,18 +74,18 @@ export default async function handler(req, res) {
       nombre = props["Profesional"].title.map(t => t.plain_text).join("");
     }
 
-    // 👨‍⚕️ AIC text (FORMULA)
+    // 👨‍⚕️ Visitador (FORMULA)
     let visitador = null;
     if (props["AIC text"]?.type === "formula") {
       visitador = props["AIC text"].formula.string || null;
     }
-    
-    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate");
-    
+
+    // ✅ RESPUESTA FINAL
     return res.json({
       encontrado: true,
       nombre,
-      visitador
+      visitador,
+      tipo
     });
 
   } catch (error) {
