@@ -28,7 +28,8 @@ export default async function handler(req, res) {
               { property: "Mat. MN", number: { equals: numero } }
             ]
           },
-          page_size: 1
+          page_size: 1,
+          filter_properties: ["Profesional", "AIC text", "Mat. MP", "Mat. MN"]
         })
       }
     );
