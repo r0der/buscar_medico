@@ -29,7 +29,7 @@ body {
 
 .logo {
   width: 100%;
-  max-height: 120px;
+  max-height: 150px;
   object-fit: contain;
   margin-bottom: 20px;
 }
@@ -133,12 +133,6 @@ button:disabled {
   text-align: center;
 }
 
-.alta-text {
-  font-size: 13px;
-  color: #1e3a8a;
-  margin-bottom: 10px;
-}
-
 .alta-btn {
   display: inline-block;
   padding: 10px 16px;
@@ -226,9 +220,6 @@ async function verificar() {
       altaContainer.classList.remove("oculto");
       altaContainer.innerHTML = `
         <div class="alta-container">
-          <div class="alta-text">
-            Si desea dar de alta un médico:
-          </div>
           <a href="https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" target="_blank" class="alta-btn">
             NUEVO MÉDICO
           </a>
