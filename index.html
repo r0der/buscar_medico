@@ -169,12 +169,12 @@ async function verificar() {
   const spinner = document.getElementById("spinner");
   const loadingText = document.getElementById("loadingText");
 
-  if (!matricula) {
-    resultado.className = "error";
-    resultado.style.display = "block";
-    resultado.innerHTML = "Ingresá una matrícula válida";
-    return;
-  }
+  if (!matricula || matricula.length < 3) {
+  resultado.className = "error";
+  resultado.style.display = "block";
+  resultado.innerHTML = "Ingresá una matrícula válida (mínimo 3 dígitos)";
+  return;
+}
 
   // 🔒 estado loading PRO
   boton.disabled = true;
@@ -246,6 +246,14 @@ async function verificar() {
   // 🧹 Limpiar resultado cuando escribe
   document.getElementById("matricula").addEventListener("input", () => {
     document.getElementById("resultado").style.display = "none";
+  });
+
+ // 🚫 Deshabilitar botón si no cumple mínimo 4 dígitos
+  const input = document.getElementById("matricula");
+  const boton = document.getElementById("btnBuscar");
+  
+  input.addEventListener("input", () => {
+    boton.disabled = input.value.length < 4;
   });
  
 </script>
