@@ -1,522 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verificador de Matrícula Médica</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:          #f0ede8;
-      --surface:     #faf9f7;
-      --border:      #d8d3cb;
-      --text:        #1a1814;
-      --muted:       #7a756c;
-      --accent:      #1d4b8f;
-      --accent-lt:   #e8eef7;
-      --success:     #1a5c38;
-      --success-bg:  #e8f5ee;
-      --success-bd:  #a8d5b8;
-      --danger:      #7a1f1f;
-      --danger-bg:   #faeaea;
-      --danger-bd:   #e0a0a0;
-      --warn:        #7a5a1a;
-      --warn-bg:     #fdf4e0;
-      --warn-bd:     #e0c880;
-      --radius:      12px;
-      --shadow:      0 2px 20px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.04);
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--text);
-    }
-
-    /* ── Fondo con textura sutil ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image:
-        radial-gradient(circle at 20% 20%, rgba(29,75,143,.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(29,75,143,.04) 0%, transparent 50%);
-      pointer-events: none;
-    }
-
-    /* ── Layout ── */
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-
-    /* ── Tarjeta principal ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      width: 100%;
-      max-width: 480px;
-      overflow: hidden;
-      animation: slideUp .45s cubic-bezier(.22,1,.36,1) both;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Header de la tarjeta ── */
-    .card-header {
-      background: var(--accent);
-      padding: 2rem 2rem 1.6rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header::after {
-      content: '';
-      position: absolute;
-      right: -30px; bottom: -30px;
-      width: 140px; height: 140px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.06);
-    }
-
-    .card-header::before {
-      content: '';
-      position: absolute;
-      right: 20px; top: -20px;
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.04);
-    }
-
-    .header-icon {
-      width: 44px; height: 44px;
-      background: rgba(255,255,255,.15);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 1rem;
-    }
-
-    .header-icon svg { width: 22px; height: 22px; fill: #fff; }
-
-    .card-header h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.55rem;
-      font-weight: 400;
-      color: #fff;
-      line-height: 1.2;
-      letter-spacing: -.01em;
-    }
-
-    .card-header p {
-      margin-top: .4rem;
-      font-size: .82rem;
-      color: rgba(255,255,255,.65);
-      font-weight: 300;
-    }
-
-    /* ── Cuerpo ── */
-    .card-body { padding: 2rem; }
-
-    /* ── Selector de tipo ── */
-    .tipo-label {
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: .5rem;
-      display: block;
-    }
-
-    .tipo-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-      margin-bottom: 1.4rem;
-    }
-
-    .tipo-btn {
-      padding: .5rem;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: transparent;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .78rem;
-      font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .18s ease;
-      text-align: center;
-    }
-
-    .tipo-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-lt);
-    }
-
-    .tipo-btn.active {
-      border-color: var(--accent);
-      background: var(--accent-lt);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    /* ── Input group ── */
-    .input-group {
-      position: relative;
-      margin-bottom: 1.2rem;
-    }
-
-    .input-group label {
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: block;
-      margin-bottom: .5rem;
-    }
-
-    .input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-wrap svg {
-      position: absolute;
-      left: 14px;
-      width: 18px; height: 18px;
-      color: var(--muted);
-      pointer-events: none;
-      transition: color .18s;
-    }
-
-    #matricula {
-      width: 100%;
-      padding: .85rem 1rem .85rem 2.8rem;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 500;
-      color: var(--text);
-      letter-spacing: .04em;
-      transition: border-color .18s, box-shadow .18s;
-      appearance: textfield;
-      -moz-appearance: textfield;
-    }
-
-    #matricula::-webkit-outer-spin-button,
-    #matricula::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-    #matricula::placeholder { color: #bbb; font-weight: 300; }
-
-    #matricula:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(29,75,143,.12);
-    }
-
-    #matricula:focus + svg,
-    .input-wrap:focus-within svg { color: var(--accent); }
-
-    /* posición del svg DESPUÉS del input en DOM */
-    .input-wrap { flex-direction: row; }
-    .input-icon { order: -1; }
-
-    /* ── Botón Verificar ── */
-    #btn-verificar {
-      width: 100%;
-      padding: .9rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'DM Sans', sans-serif;
-      font-size: .95rem;
-      font-weight: 600;
-      letter-spacing: .02em;
-      cursor: pointer;
-      transition: background .18s, transform .1s, box-shadow .18s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
-    #btn-verificar:hover:not(:disabled) {
-      background: #163d78;
-      box-shadow: 0 4px 16px rgba(29,75,143,.35);
-    }
-
-    #btn-verificar:active:not(:disabled) { transform: scale(.985); }
-
-    #btn-verificar:disabled { opacity: .6; cursor: not-allowed; }
-
-    /* ── Spinner ── */
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,.35);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      display: none;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Resultado ── */
-    #resultado {
-      margin-top: 1.3rem;
-      border-radius: var(--radius);
-      padding: 1.1rem 1.2rem;
-      display: none;
-      align-items: flex-start;
-      gap: 12px;
-      animation: fadeIn .3s ease both;
-      border-width: 1.5px;
-      border-style: solid;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    #resultado.encontrado {
-      background: var(--success-bg);
-      border-color: var(--success-bd);
-      color: var(--success);
-      display: flex;
-    }
-
-    #resultado.no-encontrado {
-      background: var(--danger-bg);
-      border-color: var(--danger-bd);
-      color: var(--danger);
-      display: flex;
-    }
-
-    #resultado.error {
-      background: var(--warn-bg);
-      border-color: var(--warn-bd);
-      color: var(--warn);
-      display: flex;
-    }
-
-    .resultado-icon {
-      flex-shrink: 0;
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .encontrado   .resultado-icon { background: rgba(26,92,56,.12); }
-    .no-encontrado .resultado-icon { background: rgba(122,31,31,.1); }
-    .error         .resultado-icon { background: rgba(122,90,26,.1); }
-
-    .resultado-icon svg { width: 20px; height: 20px; }
-
-    .resultado-texto strong {
-      display: block;
-      font-size: .92rem;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .resultado-texto span {
-      font-size: .8rem;
-      opacity: .8;
-      font-weight: 400;
-    }
-
-    /* ── Divider ── */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.6rem 0 1.2rem;
-    }
-
-    /* ── Footer de la card ── */
-    .card-footer {
-      padding: 0 2rem 1.6rem;
-      text-align: center;
-      font-size: .74rem;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    .card-footer strong { font-weight: 500; color: var(--text); }
-  </style>
+  <meta charset="UTF-8">
+  <title>Verificador de Matrícula</title>
 </head>
-<body>
-<div class="page">
-  <div class="card">
 
-    <!-- Header -->
-    <div class="card-header">
-      <div class="header-icon">
-        <!-- Ícono médico / stethoscope -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 8h-1V6a4 4 0 0 0-8 0v2H9a3 3 0 0 0-3 3v4a7 7 0 0 0 6 6.93V22h2v-.07A7 7 0 0 0 20 15v-4a3 3 0 0 0-1-2.24V8zm-7-4a2 2 0 0 1 2 2v2h-4V6a2 2 0 0 1 2-2zm6 11a5 5 0 0 1-10 0v-4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v4z"/>
-        </svg>
-      </div>
-      <h1>Verificador de Matrícula</h1>
-      <p>Consultá si un médico ya está registrado en el sistema</p>
-    </div>
+<body style="font-family: Arial; padding:40px;">
 
-    <!-- Body -->
-    <div class="card-body">
+  <h2>Verificar Médico</h2>
 
-      <!-- Selector de tipo de matrícula -->
-      <span class="tipo-label">Tipo de búsqueda</span>
-      <div class="tipo-selector">
-        <button class="tipo-btn active" data-tipo="ambas">Ambas</button>
-        <button class="tipo-btn" data-tipo="MP">Solo MP</button>
-        <button class="tipo-btn" data-tipo="MN">Solo MN</button>
-      </div>
+  <input type="number" id="matricula" placeholder="Ingrese matrícula">
+  <br><br>
 
-      <!-- Input matrícula -->
-      <div class="input-group">
-        <label for="matricula">Número de matrícula</label>
-        <div class="input-wrap">
-          <input
-            type="number"
-            id="matricula"
-            placeholder="Ej: 12345"
-            min="1"
-            autocomplete="off"
-          />
-          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/>
-          </svg>
-        </div>
-      </div>
+  <button onclick="verificar()">VERIFICAR</button>
 
-      <!-- Botón -->
-      <button id="btn-verificar" onclick="verificar()">
-        <svg id="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <div class="spinner" id="spinner"></div>
-        <span id="btn-texto">Verificar</span>
-      </button>
+  <p id="resultado"></p>
 
-      <!-- Resultado -->
-      <div id="resultado">
-        <div class="resultado-icon" id="res-icon"></div>
-        <div class="resultado-texto">
-          <strong id="res-titulo"></strong>
-          <span id="res-detalle"></span>
-        </div>
-      </div>
+  <script>
+    async function verificar() {
+      const matricula = document.getElementById("matricula").value;
+      const resultado = document.getElementById("resultado");
 
-    </div>
+      if (!matricula) {
+        resultado.innerText = "Ingresá una matrícula";
+        resultado.style.color = "orange";
+        return;
+      }
 
-    <hr class="divider" style="margin: 0 2rem;" />
+      resultado.innerText = "Consultando...";
 
-    <!-- Footer -->
-    <div class="card-footer">
-      Conectado a <strong>Notion — Base de Médicos</strong> · Datos en tiempo real
-    </div>
+      try {
+        const res = await fetch("/api/verificar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            matricula: Number(matricula)
+          })
+        });
 
-  </div>
-</div>
+        const data = await res.json();
 
-<script>
-  // ── Selector de tipo ────────────────────────────────────
-  let tipoSeleccionado = "ambas";
+        if (!res.ok) {
+          resultado.innerText = "Error: " + data.error;
+          resultado.style.color = "orange";
+          return;
+        }
 
-  document.querySelectorAll(".tipo-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tipo-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      tipoSeleccionado = btn.dataset.tipo;
-    });
-  });
+        if (data.encontrado) {
+          resultado.innerText =
+            "Médico existente" +
+            (data.nombre ? " - " + data.nombre : "") +
+            (data.tipo ? " (" + data.tipo + ")" : "");
 
-  // ── Verificar con Enter ─────────────────────────────────
-  document.getElementById("matricula").addEventListener("keydown", e => {
-    if (e.key === "Enter") verificar();
-  });
+          resultado.style.color = "green";
+        } else {
+          resultado.innerText = "Médico inexistente";
+          resultado.style.color = "red";
+        }
 
-  // ── Función principal ───────────────────────────────────
-  async function verificar() {
-  const matricula = document.getElementById("matricula").value;
-  const tipo = document.getElementById("tipo").value;
-  const resultado = document.getElementById("resultado");
-
-  resultado.innerText = "Consultando...";
-
-  try {
-    const res = await fetch("/api/verificar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        matricula: Number(matricula),
-        tipo
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.encontrado) {
-      resultado.innerText = "Médico existente: " + (data.nombre || "");
-      resultado.style.color = "green";
-    } else {
-      resultado.innerText = "Médico inexistente";
-      resultado.style.color = "red";
+      } catch (error) {
+        resultado.innerText = "Error de conexión con el servidor";
+        resultado.style.color = "orange";
+      }
     }
+  </script>
 
-  } catch (e) {
-    resultado.innerText = "Error de conexión";
-  }
-}
-
-  // ── Helpers ─────────────────────────────────────────────
-  function setLoading(on) {
-    const btn    = document.getElementById("btn-verificar");
-    const spinner = document.getElementById("spinner");
-    const icon   = document.getElementById("btn-icon");
-    const texto  = document.getElementById("btn-texto");
-    btn.disabled       = on;
-    spinner.style.display = on ? "block" : "none";
-    icon.style.display    = on ? "none"  : "block";
-    texto.textContent     = on ? "Verificando..." : "Verificar";
-  }
-
-  function mostrarResultado(tipo, titulo, detalle) {
-    const el      = document.getElementById("resultado");
-    const iconEl  = document.getElementById("res-icon");
-    const tituloEl = document.getElementById("res-titulo");
-    const detalleEl = document.getElementById("res-detalle");
-
-    el.className = tipo;
-
-    const iconos = {
-      encontrado:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-      "no-encontrado":`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-      error:          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-    };
-
-    iconEl.innerHTML  = iconos[tipo] || "";
-    tituloEl.textContent = titulo;
-    detalleEl.textContent = detalle;
-    el.style.display = "flex";
-  }
-</script>
 </body>
 </html>
