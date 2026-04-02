@@ -34,8 +34,6 @@ export default async function handler(req, res) {
 
     let data = await notionRes.json();
 
-    let tipo = "Provincial (MP)";
-
     // 🔁 2. SI NO ENCUENTRA → BUSCAR EN NACIONAL (MN)
     if (data.results.length === 0) {
       notionRes = await fetch(
@@ -58,8 +56,7 @@ export default async function handler(req, res) {
       );
 
       data = await notionRes.json();
-      tipo = "Nacional (MN)";
-    }
+      }
 
     // ❌ NO ENCONTRADO
     if (data.results.length === 0) {
@@ -77,12 +74,18 @@ export default async function handler(req, res) {
     if (props["Profesional"]?.type === "title") {
       nombre = props["Profesional"].title.map(t => t.plain_text).join("");
     }
+    
+    // 👤 AIC (TEXT)
+    let aic = null;
+    if (props["AIC text"]?.type === "rich_text") {
+      aic = props["AIC text"].rich_text.map(t => t.plain_text).join("");
+    }
 
     // ✅ RESPUESTA FINAL
     return res.json({
       encontrado: true,
       nombre,
-      tipo,
+      aic,
       url
     });
 
