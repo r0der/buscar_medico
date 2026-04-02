@@ -77,8 +77,8 @@ export default async function handler(req, res) {
     
     // 👤 AIC (TEXT)
     let aic = null;
-    if (props["AIC text"]?.type === "rich_text") {
-      aic = props["AIC text"].rich_text.map(t => t.plain_text).join("");
+    if (props["AIC text"]?.type === "formula") {
+      aic = props["AIC text"].formula.string;
     }
 
     // ✅ RESPUESTA FINAL
