@@ -139,6 +139,18 @@ button:disabled {
   border-radius: 8px;
   text-decoration: none;
 }
+
+  .ver-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #10b981;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+}
+  
 </style>
 </head>
 
@@ -206,6 +218,9 @@ async function verificar() {
         👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
         📄 Matrícula: ${matricula}<br>
         🏥 Tipo: ${data.tipo}
+        <a href="${data.url}" target="_blank" class="ver-btn">
+    🔗 Ver ficha en Notion
+  </a>
       `;
     } else {
       resultado.className = "error";
