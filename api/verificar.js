@@ -67,6 +67,10 @@ export default async function handler(req, res) {
     }
 
     const props = data.results[0].properties;
+    const pageId = data.results[0].id;
+
+    // 🔗 armar URL de Notion
+    const url = `https://www.notion.so/${pageId.replace(/-/g, "")}`;
 
     // 👤 Profesional (TITLE)
     let nombre = null;
@@ -78,7 +82,8 @@ export default async function handler(req, res) {
     return res.json({
       encontrado: true,
       nombre,
-      tipo
+      tipo,
+      url
     });
 
   } catch (error) {
