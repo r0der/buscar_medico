@@ -160,10 +160,17 @@ button:disabled {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.4);
-  display: flex;
+
+  display: none; /* 🔥 CAMBIO IMPORTANTE */
+
   justify-content: center;
   align-items: center;
   z-index: 999;
+}
+
+/* cuando se muestra */
+.modal.show {
+  display: flex;
 }
 
 .modal-content {
@@ -323,7 +330,7 @@ function abrirAlta(matricula) {
   const countdownEl = document.getElementById("countdown");
 
   navigator.clipboard.writeText(matricula);
-  modal.classList.remove("oculto");
+  modal.classList.add("show");
 
   let tiempo = 5;
   countdownEl.innerText = tiempo + "...";
@@ -346,7 +353,7 @@ function abrirAhora() {
 
 function cancelarModal() {
   limpiarIntervalo();
-  document.getElementById("modal").classList.add("oculto");
+  document.getElementById("modal").remove("show");
 }
 
 function limpiarIntervalo() {
