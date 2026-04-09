@@ -112,15 +112,16 @@ async function verificar() {
 
     if (data.encontrado) {
       resultado.className = "ok";
-      resultado.innerHTML = `
-        <div class="title">Médico existente</div>
-        👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
-        📄 Matrícula: ${matricula}<br>
-        👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}<br><br>
-        <a href="${data.url}" target="_blank" class="ver-btn">
-          Ver ficha en Notion
-        </a>
-      `;
+     resultado.innerHTML = `
+      <div class="title">Médico existente</div>
+      👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
+      📄 Matrícula: ${matricula}<br>
+      👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}<br><br>
+    
+      <a href="#" onclick="abrirNotion('${data.url}'); return false;" class="ver-btn">
+        Ver ficha en Notion
+      </a>
+    `;
     } else {
       resultado.className = "error";
       resultado.innerHTML = `
@@ -147,6 +148,19 @@ async function verificar() {
     spinner.classList.add("oculto");
     loadingText.classList.add("oculto");
   }
+}
+
+  function abrirNotion(urlWeb) {
+  // convertir https → notion://
+  const urlApp = urlWeb.replace("https://", "notion://");
+
+  // intentar abrir app
+  window.location.href = urlApp;
+
+  // fallback a web si falla
+  setTimeout(() => {
+    window.open(urlWeb, "_blank");
+  }, 800);
 }
 
 function abrirAlta(matricula) {
