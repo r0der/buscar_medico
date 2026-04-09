@@ -27,7 +27,7 @@ body {
 
 .logo {
   display: block;
-  width: 100%;          /* 🔥 MISMO ancho que input+botón */
+  width: 100%;
   height: auto;
   margin-bottom: 15px;
 }
@@ -121,7 +121,6 @@ button:disabled {
   margin-bottom: 10px;
 }
 
-/* 🔵 BLOQUE CELESTE */
 .alta-container {
   margin-top: 15px;
   padding: 14px;
@@ -140,7 +139,7 @@ button:disabled {
   text-decoration: none;
 }
 
-  .ver-btn {
+.ver-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -153,7 +152,8 @@ button:disabled {
   font-size: 13px;
 }
 
-  .modal {
+/* MODAL */
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -175,7 +175,7 @@ button:disabled {
   animation: fadeIn 0.3s ease;
 }
 
-  .modal-actions {
+.modal-actions {
   margin-top: 18px;
   display: flex;
   gap: 10px;
@@ -204,7 +204,6 @@ button:disabled {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-  
 </style>
 </head>
 
@@ -222,12 +221,34 @@ button:disabled {
   <div id="loadingText" class="loading oculto">Consultando base de datos...</div>
 
   <div id="resultado"></div>
-
-  <!-- 🔥 ESTE ES EL NUEVO BLOQUE INDEPENDIENTE -->
   <div id="altaContainer" class="oculto"></div>
 </div>
 
+<!-- MODAL -->
+<div id="modal" class="modal oculto">
+  <div class="modal-content">
+    <p>
+      <strong>N° de matrícula copiado al portapapeles</strong><br>
+      puede pegarlo en el campo del formulario
+    </p>
+
+    <p style="margin-top:15px; font-weight:600;">
+      ABRIENDO ALTA MÉDICO
+    </p>
+
+    <p id="countdown">5...</p>
+
+    <div class="modal-actions">
+      <button onclick="abrirAhora()" class="btn-primary">Abrir ahora</button>
+      <button onclick="cancelarModal()" class="btn-secondary">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script>
+let intervaloGlobal = null;
+let urlAlta = "notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
+
 async function verificar() {
   const matricula = document.getElementById("matricula").value;
   const resultado = document.getElementById("resultado");
@@ -236,7 +257,6 @@ async function verificar() {
   const loadingText = document.getElementById("loadingText");
   const altaContainer = document.getElementById("altaContainer");
 
-  // limpiar bloque celeste siempre
   altaContainer.classList.add("oculto");
   altaContainer.innerHTML = "";
 
@@ -248,10 +268,8 @@ async function verificar() {
   }
 
   boton.disabled = true;
-  boton.innerText = "Buscar";
   spinner.classList.remove("oculto");
   loadingText.classList.remove("oculto");
-
   resultado.style.display = "none";
 
   try {
@@ -262,25 +280,16 @@ async function verificar() {
     });
 
     const data = await res.json();
-
     resultado.style.display = "block";
 
     if (data.encontrado) {
       resultado.className = "ok";
       resultado.innerHTML = `
-      <div class="title">Médico existente</div>
-      👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
-      📄 Matrícula: ${matricula}<br>
-      👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}<br><br>
-    
-      <a href="${data.url}" target="_blank" class="ver-btn">
-        <svg width="16" height="16" viewBox="0 0 100 100" style="vertical-align: middle;">
-          <rect width="100" height="100" fill="white" stroke="black" stroke-width="8"/>
-          <text x="50%" y="60%" text-anchor="middle" font-size="55" font-family="Arial">N</text>
-        </svg>
-        Ver ficha en Notion
-      </a>
-    `;
+        <div class="title">Médico existente</div>
+        👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
+        📄 Matrícula: ${matricula}<br>
+        👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}
+      `;
     } else {
       resultado.className = "error";
       resultado.innerHTML = `
@@ -288,11 +297,10 @@ async function verificar() {
         La matrícula ${matricula} no está registrada.
       `;
 
-      // 🔵 BLOQUE SEPARADO (FUERA DEL ROJO)
       altaContainer.classList.remove("oculto");
       altaContainer.innerHTML = `
         <div class="alta-container">
-          <a href="#" class="alta-btn" onclick="abrirAlta('${matricula}')">
+          <a href="#" class="alta-btn" onclick="abrirAlta('${matricula}'); return false;">
             NUEVO MÉDICO
           </a>
         </div>
@@ -305,22 +313,16 @@ async function verificar() {
     resultado.innerHTML = "Error de conexión";
   } finally {
     boton.disabled = false;
-    boton.innerText = "Buscar";
     spinner.classList.add("oculto");
     loadingText.classList.add("oculto");
   }
 }
 
-  let intervaloGlobal = null;
-let urlAlta = "notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
-
 function abrirAlta(matricula) {
   const modal = document.getElementById("modal");
   const countdownEl = document.getElementById("countdown");
 
-  // Copiar matrícula
   navigator.clipboard.writeText(matricula);
-
   modal.classList.remove("oculto");
 
   let tiempo = 5;
@@ -358,42 +360,16 @@ function redirigir() {
   window.location.href = urlAlta;
 }
 
-// Enter
 document.getElementById("matricula").addEventListener("keypress", function(e) {
   if (e.key === "Enter") verificar();
 });
 
-// Focus
 document.getElementById("matricula").focus();
 
-// Limpiar
 document.getElementById("matricula").addEventListener("input", () => {
   document.getElementById("resultado").style.display = "none";
   document.getElementById("altaContainer").classList.add("oculto");
 });
-
-<div id="modal" class="modal oculto">
-  <div class="modal-content">
-    
-    <p>
-      <strong>N° de matrícula copiado al portapapeles</strong><br>
-      puede pegarlo en el campo del formulario
-    </p>
-
-    <p style="margin-top:15px; font-weight:600;">
-      ABRIENDO ALTA MÉDICO
-    </p>
-
-    <p id="countdown">5...</p>
-
-    <div class="modal-actions">
-      <button onclick="abrirAhora()" class="btn-primary">Abrir ahora</button>
-      <button onclick="cancelarModal()" class="btn-secondary">Cancelar</button>
-    </div>
-
-  </div>
-</div>
-  
 </script>
 
 </body>
