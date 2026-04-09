@@ -152,6 +152,58 @@ button:disabled {
   text-decoration: none;
   font-size: 13px;
 }
+
+  .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  text-align: center;
+  width: 300px;
+  animation: fadeIn 0.3s ease;
+}
+
+  .modal-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
   
 </style>
 </head>
@@ -240,7 +292,7 @@ async function verificar() {
       altaContainer.classList.remove("oculto");
       altaContainer.innerHTML = `
         <div class="alta-container">
-          <a href="notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106" class="alta-btn">
+          <a href="#" class="alta-btn" onclick="abrirAlta('${matricula}')">
             NUEVO MÉDICO
           </a>
         </div>
@@ -259,6 +311,53 @@ async function verificar() {
   }
 }
 
+  let intervaloGlobal = null;
+let urlAlta = "notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
+
+function abrirAlta(matricula) {
+  const modal = document.getElementById("modal");
+  const countdownEl = document.getElementById("countdown");
+
+  // Copiar matrícula
+  navigator.clipboard.writeText(matricula);
+
+  modal.classList.remove("oculto");
+
+  let tiempo = 5;
+  countdownEl.innerText = tiempo + "...";
+
+  intervaloGlobal = setInterval(() => {
+    tiempo--;
+    countdownEl.innerText = tiempo + "...";
+
+    if (tiempo === 0) {
+      clearInterval(intervaloGlobal);
+      redirigir();
+    }
+  }, 1000);
+}
+
+function abrirAhora() {
+  limpiarIntervalo();
+  redirigir();
+}
+
+function cancelarModal() {
+  limpiarIntervalo();
+  document.getElementById("modal").classList.add("oculto");
+}
+
+function limpiarIntervalo() {
+  if (intervaloGlobal) {
+    clearInterval(intervaloGlobal);
+    intervaloGlobal = null;
+  }
+}
+
+function redirigir() {
+  window.location.href = urlAlta;
+}
+
 // Enter
 document.getElementById("matricula").addEventListener("keypress", function(e) {
   if (e.key === "Enter") verificar();
@@ -272,6 +371,29 @@ document.getElementById("matricula").addEventListener("input", () => {
   document.getElementById("resultado").style.display = "none";
   document.getElementById("altaContainer").classList.add("oculto");
 });
+
+<div id="modal" class="modal oculto">
+  <div class="modal-content">
+    
+    <p>
+      <strong>N° de matrícula copiado al portapapeles</strong><br>
+      puede pegarlo en el campo del formulario
+    </p>
+
+    <p style="margin-top:15px; font-weight:600;">
+      ABRIENDO ALTA MÉDICO
+    </p>
+
+    <p id="countdown">5...</p>
+
+    <div class="modal-actions">
+      <button onclick="abrirAhora()" class="btn-primary">Abrir ahora</button>
+      <button onclick="cancelarModal()" class="btn-secondary">Cancelar</button>
+    </div>
+
+  </div>
+</div>
+  
 </script>
 
 </body>
