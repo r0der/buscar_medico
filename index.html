@@ -175,10 +175,10 @@ button:disabled {
 
 .modal-content {
   background: white;
-  padding: 25px;
+  padding: 20px;
   border-radius: 14px;
   text-align: center;
-  width: 300px;
+  width: 280px;
   animation: fadeIn 0.3s ease;
 }
 
@@ -205,6 +205,25 @@ button:disabled {
   padding: 10px 14px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+  .modal-text {
+  font-size: 14px;
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.modal-count {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px 0 10px;
 }
 
 @keyframes fadeIn {
@@ -234,16 +253,16 @@ button:disabled {
 <!-- MODAL -->
 <div id="modal" class="modal oculto">
   <div class="modal-content">
-    <p>
-      <strong>N° de matrícula copiado al portapapeles</strong><br>
-      puede pegarlo en el campo del formulario
-    </p>
+    <p class="modal-text">
+  <strong>Matrícula copiada</strong><br>
+  Pegala en el formulario
+  </p>
 
-    <p style="margin-top:15px; font-weight:600;">
-      ABRIENDO ALTA MÉDICO
-    </p>
-
-    <p id="countdown">5...</p>
+  <p class="modal-title">
+    Abriendo alta médico
+  </p>
+  
+  <p id="countdown" class="modal-count">5...</p>
 
     <div class="modal-actions">
       <button onclick="abrirAhora()" class="btn-primary">Abrir ahora</button>
@@ -365,6 +384,11 @@ function limpiarIntervalo() {
 
 function redirigir() {
   window.location.href = urlAlta;
+
+  // 🔥 reset automático después de 1 segundo
+  setTimeout(() => {
+    location.reload();
+  }, 1000);
 }
 
 document.getElementById("matricula").addEventListener("keypress", function(e) {
