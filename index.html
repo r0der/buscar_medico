@@ -196,27 +196,28 @@ function limpiarIntervalo() {
 }
 
 function redirigir() {
-  // Cerrar el modal
   document.getElementById("modal").classList.remove("show");
-
-  let appAbrioOK = false;
-
-  // Si la app de Notion está instalada, el navegador pierde el foco al lanzarla
-  window.addEventListener("blur", () => {
-    appAbrioOK = true;
-  }, { once: true });
-
-  // Intentar abrir con protocolo nativo
-  window.location.href = URL_APP;
-
-  // Si después de 1.5s no hubo blur, la app no está instalada → abrir web
-  setTimeout(() => {
-    if (!appAbrioOK) {
-      window.open(URL_WEB, "_blank");
-    }
-    // Recargar el formulario en ambos casos
+  
+  const tieneApp = localStorage.getItem("notionAppInstalada");
+  
+  if (tieneApp === "si") {
+    window.location.href = URL_APP;
+    setTimeout(() => location.reload(), 1000);
+  } else if (tieneApp === "no") {
+    window.open(URL_WEB, "_blank");
     setTimeout(() => location.reload(), 800);
-  }, 1500);
+  } else {
+    // Primera vez: pregunta
+    const resp = confirm("¿Tenés la app de Notion instalada en tu PC?");
+    localStorage.setItem("notionAppInstalada", resp ? "si" : "no");
+    if (resp) {
+      window.location.href = URL_APP;
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      window.open(URL_WEB, "_blank");
+      setTimeout(() => location.reload(), 800);
+    }
+  }
 }
 
 document.getElementById("matricula").addEventListener("keypress", function(e) {
