@@ -6,7 +6,6 @@
 <title>Verificador de Médicos</title>
 
 <style>
-/* (TODO TU CSS EXACTAMENTE IGUAL, NO LO TOQUÉ) */
 * { box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ffffff; display: flex; justify-content: center; align-items: flex-start; min-height: 50vh; }
 .card { background: white; padding: 40px; border-radius: 18px; width: 400px; text-align: center; }
@@ -75,7 +74,9 @@ button:disabled { background: #94a3b8; }
 
 <script>
 let intervaloGlobal = null;
-let urlAlta = "notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
+
+const URL_WEB  = "https://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
+const URL_APP  = "notion://www.notion.so/224ceb7fce0c8009842efc2bf5f3fff9?pvs=106";
 
 async function verificar() {
   const matricula = document.getElementById("matricula").value;
@@ -112,16 +113,15 @@ async function verificar() {
 
     if (data.encontrado) {
       resultado.className = "ok";
-     resultado.innerHTML = `
-      <div class="title">Médico existente</div>
-      👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
-      📄 Matrícula: ${matricula}<br>
-      👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}<br><br>
-    
-      <a href="#" onclick="abrirNotion('${data.url}'); return false;" class="ver-btn">
-        Ver ficha en Notion
-      </a>
-    `;
+      resultado.innerHTML = `
+        <div class="title">Médico existente</div>
+        👤 <strong>${data.nombre || "Sin nombre"}</strong><br>
+        📄 Matrícula: ${matricula}<br>
+        👨‍⚕️ Visitado por: ${data.aic || "Sin asignar"}<br><br>
+        <a href="#" onclick="abrirNotion('${data.url}'); return false;" class="ver-btn">
+          Ver ficha en Notion
+        </a>
+      `;
     } else {
       resultado.className = "error";
       resultado.innerHTML = `
@@ -150,14 +150,9 @@ async function verificar() {
   }
 }
 
-  function abrirNotion(urlWeb) {
-  // convertir https → notion://
+function abrirNotion(urlWeb) {
   const urlApp = urlWeb.replace("https://", "notion://");
-
-  // intentar abrir app
   window.location.href = urlApp;
-
-  // fallback a web si falla
   setTimeout(() => {
     window.open(urlWeb, "_blank");
   }, 800);
@@ -176,7 +171,6 @@ function abrirAlta(matricula) {
   intervaloGlobal = setInterval(() => {
     tiempo--;
     countdownEl.innerText = tiempo + "...";
-
     if (tiempo === 0) {
       clearInterval(intervaloGlobal);
       redirigir();
@@ -202,10 +196,27 @@ function limpiarIntervalo() {
 }
 
 function redirigir() {
-  window.location.href = urlAlta;
+  // Cerrar el modal
+  document.getElementById("modal").classList.remove("show");
+
+  let appAbrioOK = false;
+
+  // Si la app de Notion está instalada, el navegador pierde el foco al lanzarla
+  window.addEventListener("blur", () => {
+    appAbrioOK = true;
+  }, { once: true });
+
+  // Intentar abrir con protocolo nativo
+  window.location.href = URL_APP;
+
+  // Si después de 1.5s no hubo blur, la app no está instalada → abrir web
   setTimeout(() => {
-    location.reload();
-  }, 1000);
+    if (!appAbrioOK) {
+      window.open(URL_WEB, "_blank");
+    }
+    // Recargar el formulario en ambos casos
+    setTimeout(() => location.reload(), 800);
+  }, 1500);
 }
 
 document.getElementById("matricula").addEventListener("keypress", function(e) {
